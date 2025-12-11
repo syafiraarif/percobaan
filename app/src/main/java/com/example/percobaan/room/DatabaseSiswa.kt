@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 
 @Database(
     entities = [Siswa::class, User::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class DatabaseSiswa : RoomDatabase() {
