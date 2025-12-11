@@ -31,4 +31,5 @@
     <string name="tanggal_lahir">Tanggal Lahir :</string>
     <string name="kelas">Kelas Siswa*</string>
     <string name="peminatan">Peminatan*</string>
+    <string name="logout">Logout</string>
 </resources>

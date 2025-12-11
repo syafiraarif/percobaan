@@ -1,5 +1,6 @@
 package com.example.percobaan.view
 
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -20,7 +21,9 @@ fun SiswaTopAppBar(
     canNavigateBack: Boolean,
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
-    navigateUp: () -> Unit = {}
+    navigateUp: () -> Unit = {},
+    // PARAMETER BARU UNTUK ACTIONS (LOGOUT)
+    actions: @Composable RowScope.() -> Unit = {}
 ) {
     CenterAlignedTopAppBar(
         title = { Text(title) },
@@ -35,6 +38,8 @@ fun SiswaTopAppBar(
                     )
                 }
             }
-        }
+        },
+        // MENGGUNAKAN ACTIONS
+        actions = actions
     )
 }
