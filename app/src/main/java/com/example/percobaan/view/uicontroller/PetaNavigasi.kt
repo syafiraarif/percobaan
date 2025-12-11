@@ -20,12 +20,18 @@ import com.example.percobaan.view.route.DestinasiEntry
 import com.example.percobaan.view.route.DestinasiHome
 import com.example.percobaan.view.route.DestinasiLogin
 import com.example.percobaan.view.route.DestinasiRegister
+import com.example.percobaan.view.HalamanLogin
+import com.example.percobaan.view.HalamanRegistrasi
 
 
 @Composable
 fun SiswaApp(navController: NavHostController= rememberNavController(), modifier: Modifier){
     com.example.percobaan.view.uicontroller.HostNavigasi(navController = navController)
 }
+// ... (Pastikan import berikut ada di bagian atas file)
+// import com.example.percobaan.view.HalamanLogin
+// import com.example.percobaan.view.HalamanRegistrasi
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HostNavigasi(
@@ -42,9 +48,16 @@ fun HostNavigasi(
         // 🔐 LOGIN SCREEN
         // ----------------------
         composable(DestinasiLogin.route) {
-            LoginScreen(
-                navigateToRegister = { navController.navigate(DestinasiRegister.route) },
-                navigateToHome = { navController.navigate(DestinasiHome.route) }
+            HalamanLogin( // Menggunakan fungsi HalamanLogin yang sebenarnya
+                navigateToRegister = {
+                    navController.navigate(DestinasiRegister.route)
+                },
+                navigateToHome = {
+                    // Pindah ke Home dan hapus layar Login dari back stack
+                    navController.navigate(DestinasiHome.route) {
+                        popUpTo(DestinasiLogin.route) { inclusive = true }
+                    }
+                }
             )
         }
 
@@ -52,8 +65,14 @@ fun HostNavigasi(
         // 📝 REGISTER SCREEN
         // ----------------------
         composable(DestinasiRegister.route) {
-            RegisterScreen(
-                navigateToLogin = { navController.navigate(DestinasiLogin.route) }
+            HalamanRegistrasi( // Menggunakan fungsi HalamanRegistrasi yang sebenarnya
+                navigateBack = { navController.popBackStack() }, // TAMBAHKAN INI
+                navigateToLogin = {
+                    // Pindah ke Login dan hapus layar Register dari back stack
+                    navController.navigate(DestinasiLogin.route) {
+                        popUpTo(DestinasiRegister.route) { inclusive = true }
+                    }
+                }
             )
         }
 
@@ -68,6 +87,7 @@ fun HostNavigasi(
             )
         }
 
+        // ... (Destinasi Entry, Detail, dan Edit Siswa tetap sama)
         composable(DestinasiEntry.route) {
             EntrySiswaScreen(navigateBack = { navController.popBackStack() })
         }
@@ -101,18 +121,8 @@ fun HostNavigasi(
     }
 }
 
-@Composable
-fun RegisterScreen(
-    navigateToLogin: () -> Unit
-) {
-    // isi UI register di sini
-}
 
 
-@Composable
-fun LoginScreen(
-    navigateToRegister: () -> Unit,
-    navigateToHome: () -> Unit
-) {
-    // isi UI login di sini
-}
+
+
+

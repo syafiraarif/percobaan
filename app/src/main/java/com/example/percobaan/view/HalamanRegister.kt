@@ -4,13 +4,16 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation // Import untuk menyembunyikan password
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.percobaan.R
 import com.example.percobaan.viewmodel.UserViewModel
+import com.example.percobaan.viewmodel.provider.PenyediaViewModel // Pastikan ini diimport
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -18,13 +21,16 @@ import kotlinx.coroutines.launch
 fun HalamanRegistrasi(
     navigateBack: () -> Unit,
     navigateToLogin: () -> Unit,
-    viewModel: UserViewModel = viewModel()
+    viewModel: UserViewModel = viewModel(factory = PenyediaViewModel.Factory)
 ) {
     val uiState = viewModel.uiStateUser
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-
     var checked by remember { mutableStateOf(false) }
+
+    // Fix: Ekstrak string resource di context Composable
+    val errorSyaratText = stringResource(R.string.error_syarat)
+    val btnRegisterText = stringResource(R.string.btn_register)
 
     Scaffold(
         topBar = {
@@ -45,6 +51,7 @@ fun HalamanRegistrasi(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
+            // Kolom Username (Diambil dari UserViewModel.kt)
             OutlinedTextField(
                 value = uiState.username,
                 onValueChange = {
@@ -55,6 +62,7 @@ fun HalamanRegistrasi(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            // Kolom Email
             OutlinedTextField(
                 value = uiState.email,
                 onValueChange = {
@@ -62,9 +70,11 @@ fun HalamanRegistrasi(
                 },
                 label = { Text(stringResource(R.string.email)) },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
             )
 
+            // Kolom Password
             OutlinedTextField(
                 value = uiState.password,
                 onValueChange = {
@@ -73,11 +83,12 @@ fun HalamanRegistrasi(
                 label = { Text(stringResource(R.string.password)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
+                visualTransformation = PasswordVisualTransformation(), // Menyembunyikan teks password
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
             )
 
-            // Checkbox
-            Row {
+            // Checkbox Syarat & Ketentuan
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(
                     checked = checked,
                     onCheckedChange = { checked = it }
@@ -88,12 +99,21 @@ fun HalamanRegistrasi(
                 )
             }
 
+            // Tombol Register
             Button(
                 onClick = {
                     if (!checked) {
                         scope.launch {
-                            snackbarHostState.showSnackbar(stringResource(R.string.error_syarat)
-                            )
+                            // Menggunakan variabel non-Composable
+                            snackbarHostState.showSnackbar(errorSyaratText)
+                        }
+                        return@Button
+                    }
+
+                    // Validasi minimal field terisi
+                    if (uiState.username.isBlank() || uiState.email.isBlank() || uiState.password.isBlank()) {
+                        scope.launch {
+                            snackbarHostState.showSnackbar("Semua field wajib diisi")
                         }
                         return@Button
                     }
@@ -103,12 +123,13 @@ fun HalamanRegistrasi(
                             snackbarHostState.showSnackbar(message)
                         }
 
+                        // Pindah ke halaman Login setelah berhasil
                         if (success) navigateToLogin()
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(stringResource(R.string.btn_register))
+                Text(btnRegisterText)
             }
         }
     }
