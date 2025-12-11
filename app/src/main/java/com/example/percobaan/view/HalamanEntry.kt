@@ -32,7 +32,7 @@ import com.example.percobaan.viewmodel.EntryViewModel
 import com.example.percobaan.viewmodel.UIStateSiswa
 import com.example.percobaan.viewmodel.provider.PenyediaViewModel
 import kotlinx.coroutines.launch
-
+import java.util.Calendar // FIX: Pastikan ini diimpor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,7 +45,6 @@ fun EntrySiswaScreen(
     val coroutineScope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-    // BARU: Kumpulkan daftar Mata Kuliah
     val mataKuliahList by viewModel.mataKuliahList.collectAsState()
 
     Scaffold(
@@ -54,12 +53,13 @@ fun EntrySiswaScreen(
             SiswaTopAppBar(
                 title = stringResource(DestinasiEntry.titleRes),
                 canNavigateBack = true,
+                navigateUp = navigateBack, // FIX: Tombol back berfungsi
                 scrollBehavior = scrollBehavior
             )
         }
     ) { innerPadding ->
 
-        // FIX SCROLLING: Terapkan innerPadding & verticalScroll ke body
+        // FIX SCROLLING: Terapkan innerPadding & verticalScroll ke Column
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -78,7 +78,7 @@ fun EntrySiswaScreen(
                 listMataKuliah = mataKuliahList,
                 modifier = Modifier
                     .fillMaxWidth()
-                    // Hapus padding vertikal di sini, hanya simpan padding horizontal
+                    // FIX SCROLLING: Hanya padding horizontal agar verticalScroll bekerja sempurna
                     .padding(horizontal = dimensionResource(id = R.dimen.padding_medium))
             )
         }
@@ -98,8 +98,8 @@ fun EntrySiswaBody(
         verticalArrangement = Arrangement.spacedBy(
             dimensionResource(id = R.dimen.padding_large)
         ),
-        // FIX SCROLLING: Modifier dari parent (sudah termasuk padding horizontal) digunakan di sini
-        modifier = modifier
+        // FIX SCROLLING: Tambahkan padding vertikal di sini
+        modifier = modifier.padding(vertical = dimensionResource(id = R.dimen.padding_medium))
     ) {
         FormInputSiswa(
             detailSiswa = uiStateSiswa.detailSiswa,
@@ -114,8 +114,8 @@ fun EntrySiswaBody(
             shape = MaterialTheme.shapes.small,
             modifier = Modifier
                 .fillMaxWidth()
-                // Tambahkan padding bawah agar tombol tidak mepet/terpotong
-                .padding(bottom = dimensionResource(id = R.dimen.padding_medium))
+                // FIX SCROLLING: Padding bawah ekstra untuk tombol submit
+                .padding(bottom = dimensionResource(id = R.dimen.padding_large))
         ) {
             Text(stringResource(R.string.btn_submit))
         }
@@ -131,7 +131,21 @@ fun FormInputSiswa(
     listMataKuliah: List<MataKuliah> = emptyList()
 ) {
     val context = LocalContext.current
-    val calendar = java.util.Calendar.getInstance()
+    val calendar = Calendar.getInstance()
+
+    // State untuk Kelas Dropdown
+    var dropdownKelasExpanded by remember { mutableStateOf(false) }
+    val opsiKelas = listOf("A", "B", "C", "D", "E")
+    // FIX DROPDOWN: Ambil nilai dari detailSiswa.kelas untuk ditampilkan
+    var textKelas by remember(detailSiswa.kelas) { mutableStateOf(detailSiswa.kelas) }
+
+    // State untuk Mata Kuliah Dropdown
+    var dropdownMatkulExpanded by remember { mutableStateOf(false) }
+    // FIX DROPDOWN MATA KULIAH: Sinkronisasi textMatkul dengan id_matkul di detailSiswa
+    val selectedMatkul = listMataKuliah.find { it.id_matkul == detailSiswa.id_matkul }
+    var textMatkul by remember(selectedMatkul) {
+        mutableStateOf(selectedMatkul?.nama_matkul ?: "Pilih Mata Kuliah*")
+    }
 
     Column(
         modifier = modifier,
@@ -139,7 +153,7 @@ fun FormInputSiswa(
             dimensionResource(id = R.dimen.padding_medium)
         )
     ) {
-        // Nama
+        // Nama, Alamat, Telpon (kode tetap)
         OutlinedTextField(
             value = detailSiswa.nama,
             onValueChange = { onValueChange(detailSiswa.copy(nama = it)) },
@@ -149,7 +163,6 @@ fun FormInputSiswa(
             singleLine = true
         )
 
-        // Alamat
         OutlinedTextField(
             value = detailSiswa.alamat,
             onValueChange = { onValueChange(detailSiswa.copy(alamat = it)) },
@@ -159,7 +172,6 @@ fun FormInputSiswa(
             singleLine = true
         )
 
-        // Telpon
         OutlinedTextField(
             value = detailSiswa.telpon,
             onValueChange = { onValueChange(detailSiswa.copy(telpon = it)) },
@@ -170,14 +182,11 @@ fun FormInputSiswa(
             singleLine = true
         )
 
-        // Dropdown Kelas
-        var dropdownExpanded by remember { mutableStateOf(false) }
-        val opsiKelas = listOf("A", "B", "C", "D", "E")
-        var textKelas by remember { mutableStateOf(detailSiswa.kelas) }
 
+        // Dropdown Kelas (FIXED)
         ExposedDropdownMenuBox(
-            expanded = dropdownExpanded,
-            onExpandedChange = { dropdownExpanded = !dropdownExpanded }
+            expanded = dropdownKelasExpanded,
+            onExpandedChange = { dropdownKelasExpanded = !dropdownKelasExpanded }
         ) {
             OutlinedTextField(
                 value = textKelas,
@@ -185,16 +194,16 @@ fun FormInputSiswa(
                 readOnly = true,
                 label = { Text("Kelas") },
                 trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownExpanded)
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownKelasExpanded)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .menuAnchor() // penting untuk menu muncul di bawah TextField
+                    .menuAnchor()
             )
 
             ExposedDropdownMenu(
-                expanded = dropdownExpanded,
-                onDismissRequest = { dropdownExpanded = false },
+                expanded = dropdownKelasExpanded,
+                onDismissRequest = { dropdownKelasExpanded = false },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 opsiKelas.forEach { opsi ->
@@ -202,7 +211,7 @@ fun FormInputSiswa(
                         text = { Text(opsi) },
                         onClick = {
                             textKelas = opsi
-                            dropdownExpanded = false
+                            dropdownKelasExpanded = false
                             onValueChange(detailSiswa.copy(kelas = opsi))
                         }
                     )
@@ -211,7 +220,7 @@ fun FormInputSiswa(
         }
 
 
-        // Checkbox Peminatan
+        // Checkbox Peminatan (kode tetap)
         val opsiPeminatan = listOf("RPL", "DKV", "TJKT")
         Text("Peminatan:")
         opsiPeminatan.forEach { item ->
@@ -228,13 +237,7 @@ fun FormInputSiswa(
             }
         }
 
-        // BARU: Dropdown Mata Kuliah
-        var dropdownMatkulExpanded by remember { mutableStateOf(false) }
-        val selectedMatkul = listMataKuliah.find { it.id_matkul == detailSiswa.id_matkul }
-        var textMatkul by remember(selectedMatkul) {
-            mutableStateOf(selectedMatkul?.nama_matkul ?: "Pilih Mata Kuliah*")
-        }
-
+        // Dropdown Mata Kuliah (FIXED)
         ExposedDropdownMenuBox(
             expanded = dropdownMatkulExpanded,
             onExpandedChange = { dropdownMatkulExpanded = !dropdownMatkulExpanded },
@@ -244,7 +247,7 @@ fun FormInputSiswa(
                 value = textMatkul,
                 onValueChange = {},
                 readOnly = true,
-                label = { Text(stringResource(R.string.nama_matkul).replace("*", "")) }, // Label nama matkul
+                label = { Text(stringResource(R.string.nama_matkul).replace("*", "")) },
                 trailingIcon = {
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownMatkulExpanded)
                 },
@@ -258,6 +261,7 @@ fun FormInputSiswa(
                 onDismissRequest = { dropdownMatkulExpanded = false },
                 modifier = Modifier.fillMaxWidth()
             ) {
+                // FIX: Menampilkan daftar Mata Kuliah
                 listMataKuliah.forEach { mk ->
                     DropdownMenuItem(
                         text = { Text(mk.nama_matkul) },
@@ -272,24 +276,26 @@ fun FormInputSiswa(
         }
 
 
-        // Tanggal Lahir pakai DatePickerDialog
+        // Tanggal Lahir pakai DatePickerDialog (FIXED)
         OutlinedTextField(
             value = detailSiswa.tanggal_lahir,
             onValueChange = {},
-            readOnly = true,
+            readOnly = true, // Penting agar DatePicker yang muncul, bukan keyboard
             label = { Text("Tanggal Lahir*") },
             modifier = Modifier.fillMaxWidth(),
             trailingIcon = {
                 IconButton(onClick = {
+                    // FIX: Re-implementasi DatePickerDialog yang berfungsi
                     val dpd = android.app.DatePickerDialog(
                         context,
                         { _, year, month, dayOfMonth ->
+                            // Format tanggal: DD/MM/YYYY
                             val tgl = String.format("%02d/%02d/%04d", dayOfMonth, month + 1, year)
                             onValueChange(detailSiswa.copy(tanggal_lahir = tgl))
                         },
-                        calendar.get(java.util.Calendar.YEAR),
-                        calendar.get(java.util.Calendar.MONTH),
-                        calendar.get(java.util.Calendar.DAY_OF_MONTH)
+                        calendar.get(Calendar.YEAR),
+                        calendar.get(Calendar.MONTH),
+                        calendar.get(Calendar.DAY_OF_MONTH)
                     )
                     dpd.show()
                 }) {
@@ -298,7 +304,7 @@ fun FormInputSiswa(
             }
         )
 
-        // Required field
+        // Required field (kode tetap)
         if (enabled) {
             Text(
                 text = stringResource(R.string.required_field),
@@ -306,7 +312,7 @@ fun FormInputSiswa(
             )
         }
 
-        // Divider
+        // Divider (kode tetap)
         HorizontalDivider(
             modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_medium)),
             thickness = dimensionResource(R.dimen.padding_small),

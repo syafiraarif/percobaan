@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.percobaan.repositori.AplikasiSiswa
+import com.example.percobaan.viewmodel.DetailMataKuliahViewModel // BARU
 import com.example.percobaan.viewmodel.DetailViewModel
 import com.example.percobaan.viewmodel.EditViewModel
 import com.example.percobaan.viewmodel.EntryViewModel
@@ -24,7 +25,7 @@ object PenyediaViewModel {
         initializer {
             EntryViewModel(
                 aplikasiSiswa().container.repositoriSiswa,
-                aplikasiSiswa().container.repositoriMataKuliah // Perubahan
+                aplikasiSiswa().container.repositoriMataKuliah
             )
         }
 
@@ -40,9 +41,18 @@ object PenyediaViewModel {
             EditViewModel(
                 this.createSavedStateHandle(),
                 aplikasiSiswa().container.repositoriSiswa,
-                aplikasiSiswa().container.repositoriMataKuliah // BARU
+                aplikasiSiswa().container.repositoriMataKuliah
             )
         }
+
+        // BARU: Detail Mata Kuliah ViewModel
+        initializer {
+            DetailMataKuliahViewModel(
+                this.createSavedStateHandle(),
+                aplikasiSiswa().container.repositoriMataKuliah
+            )
+        }
+
         initializer {
             UserViewModel(aplikasiSiswa().container.repositoriUser)
         }

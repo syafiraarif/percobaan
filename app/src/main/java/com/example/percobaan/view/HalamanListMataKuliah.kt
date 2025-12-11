@@ -48,7 +48,7 @@ fun HalamanListMataKuliah(
             SiswaTopAppBar(
                 title = stringResource(DestinasiListMataKuliah.titleRes),
                 canNavigateBack = true,
-                navigateUp = navigateBack, // UBAH
+                navigateUp = navigateBack, // FIX: Tombol back berfungsi
                 scrollBehavior = scrollBehavior
             )
         },

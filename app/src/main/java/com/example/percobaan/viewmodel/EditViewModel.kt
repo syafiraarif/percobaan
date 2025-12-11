@@ -6,9 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.percobaan.repositori.RepositoriMataKuliah // BARU
+import com.example.percobaan.repositori.RepositoriMataKuliah
 import com.example.percobaan.repositori.RepositoriSiswa
-import com.example.percobaan.room.MataKuliah // BARU
+import com.example.percobaan.room.MataKuliah
 import com.example.percobaan.view.route.DestinasiDetailSiswa
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -20,15 +20,16 @@ import kotlinx.coroutines.launch
 class EditViewModel(
     savedStateHandle: SavedStateHandle,
     private val repositoriSiswa: RepositoriSiswa,
-    private val repositoriMataKuliah: RepositoriMataKuliah // BARU
+    private val repositoriMataKuliah: RepositoriMataKuliah
 ) : ViewModel() {
 
     var uiStateSiswa by mutableStateOf(UIStateSiswa())
         private set
 
-    private val idSiswa: Int = checkNotNull(savedStateHandle[DestinasiDetailSiswa.itemIdArg])
+    // FIX: Menggunakan safe retrieval (default ke 0 jika argumen tidak ada)
+    private val idSiswa: Int = savedStateHandle[DestinasiDetailSiswa.itemIdArg] ?: 0
 
-    // BARU: Expose daftar Mata Kuliah (sama seperti EntryViewModel)
+    // Expose daftar Mata Kuliah
     val mataKuliahList: StateFlow<List<MataKuliah>> =
         repositoriMataKuliah.getAllMataKuliahStream("%")
             .stateIn(
@@ -40,10 +41,12 @@ class EditViewModel(
     init {
         // Load pertama kali
         viewModelScope.launch {
-            uiStateSiswa = repositoriSiswa.getSiswaStream(idSiswa)
-                .filterNotNull()
-                .first()
-                .toUIStateSiswa(true)
+            if (idSiswa > 0) { // Hanya jalankan jika ID valid (> 0)
+                uiStateSiswa = repositoriSiswa.getSiswaStream(idSiswa)
+                    .filterNotNull()
+                    .first()
+                    .toUIStateSiswa(true)
+            }
         }
     }
 
