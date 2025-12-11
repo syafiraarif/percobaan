@@ -23,6 +23,7 @@ class EditViewModel(
     private val idSiswa: Int = checkNotNull(savedStateHandle[DestinasiDetailSiswa.itemIdArg])
 
     init {
+        // Load pertama kali
         viewModelScope.launch {
             uiStateSiswa = repositoriSiswa.getSiswaStream(idSiswa)
                 .filterNotNull()
@@ -31,20 +32,36 @@ class EditViewModel(
         }
     }
 
+    /** Fungsi tambahan untuk EditSiswaScreen (LaunchedEffect) */
+    fun loadSiswa(id: Int) {
+        viewModelScope.launch {
+            uiStateSiswa = repositoriSiswa.getSiswaStream(id)
+                .filterNotNull()
+                .first()
+                .toUIStateSiswa(true)
+        }
+    }
+
     fun updateUiState(detailSiswa: DetailSiswa) {
-        uiStateSiswa =
-            UIStateSiswa(detailSiswa = detailSiswa, isEntryValid = validasiInput(detailSiswa))
+        uiStateSiswa = UIStateSiswa(
+            detailSiswa = detailSiswa,
+            isEntryValid = validasiInput(detailSiswa)
+        )
     }
 
     private fun validasiInput(uiState: DetailSiswa = uiStateSiswa.detailSiswa): Boolean {
         return with(uiState) {
-            nama.isNotBlank() && alamat.isNotBlank() && telpon.isNotBlank()
+            nama.isNotBlank() &&
+                    alamat.isNotBlank() &&
+                    telpon.isNotBlank()
         }
     }
 
+    /** UPDATE DATA */
     suspend fun updateSiswa() {
         if (validasiInput(uiStateSiswa.detailSiswa)) {
             repositoriSiswa.updateSiswa(uiStateSiswa.detailSiswa.toSiswa())
         }
     }
 }
+

@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -35,7 +36,7 @@ fun HomeScreen(
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel(factory = PenyediaViewModel.Factory)
-){
+) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
@@ -51,21 +52,25 @@ fun HomeScreen(
             FloatingActionButton(
                 onClick = navigateToItemEntry,
                 shape = MaterialTheme.shapes.medium,
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
+                modifier = Modifier.padding(
+                    dimensionResource(id = R.dimen.padding_large)
+                )
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = stringResource(R.string.entry_siswa)
                 )
             }
-        },
-    ){
-            innerPadding ->
+        }
+    ) { innerPadding ->
+
         val uiStateSiswa by viewModel.homeUiState.collectAsState()
+
         BodyHome(
             itemSiswa = uiStateSiswa.listSiswa,
-            //edit 6
-            onSiswaClick = navigateToItemUpdate,
+            onSiswaClick = { siswa -> navigateToItemUpdate(siswa.id) },
+            searchQuery = viewModel.searchQuery, // Meneruskan state pencarian
+            onSearchQueryChange = viewModel::updateSearchQuery, // Meneruskan fungsi update
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
@@ -73,15 +78,34 @@ fun HomeScreen(
     }
 }
 
+// DEFINISI FUNGSI BODYHOME YANG DIKOREKSI
 @Composable
 fun BodyHome(
     itemSiswa: List<Siswa>,
-    onSiswaClick: (Int) -> Unit,
-    modifier: Modifier=Modifier){
+    onSiswaClick: (Siswa) -> Unit,
+    searchQuery: String, // Parameter baru ditambahkan
+    onSearchQueryChange: (String) -> Unit, // Parameter baru ditambahkan
+    modifier: Modifier = Modifier
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
-    ){
+    ) {
+        // Tambahkan kolom pencarian
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = onSearchQueryChange,
+            label = { Text(stringResource(R.string.search_hint)) }, // Menggunakan string resource baru
+            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+            singleLine = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = dimensionResource(id = R.dimen.padding_medium))
+                .padding(top = dimensionResource(id = R.dimen.padding_small))
+        )
+        Spacer(modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small)))
+
+
         if (itemSiswa.isEmpty()) {
             Text(
                 text = stringResource(R.string.deskripsi_no_item),
@@ -91,27 +115,33 @@ fun BodyHome(
         } else {
             ListSiswa(
                 itemSiswa = itemSiswa,
-
-                onSiswaClick = {onSiswaClick(it.id)},
-                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small))
+                onSiswaClick,
+                modifier = Modifier.padding(
+                    horizontal = dimensionResource(id = R.dimen.padding_small)
+                )
             )
         }
     }
 }
 
+// ... (ListSiswa dan DataSiswa tetap sama)
+
 @Composable
 fun ListSiswa(
-    itemSiswa : List<Siswa>,
+    itemSiswa: List<Siswa>,
     onSiswaClick: (Siswa) -> Unit,
-    modifier: Modifier=Modifier
-){
-    LazyColumn(modifier = Modifier){
-        items(items = itemSiswa, key = {it.id}){
-                person ->  DataSiswa(
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(modifier = modifier) {
+        items(
+            items = itemSiswa,
+            key = { it.id }
+        ) { person -> DataSiswa(
             siswa = person,
             modifier = Modifier
                 .padding(dimensionResource(id = R.dimen.padding_small))
-                .clickable { onSiswaClick(person) })
+                .clickable { onSiswaClick(person)}
+        )
         }
     }
 }
@@ -120,32 +150,39 @@ fun ListSiswa(
 fun DataSiswa(
     siswa: Siswa,
     modifier: Modifier = Modifier
-){
+) {
     Card(
         modifier = modifier,
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ){
+    ) {
         Column(
             modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large)),
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_small))
-        ){
+            verticalArrangement = Arrangement.spacedBy(
+                dimensionResource(id = R.dimen.padding_small)
+            )
+        ) {
+
             Row(
                 modifier = Modifier.fillMaxWidth()
-            ){
+            ) {
                 Text(
                     text = siswa.nama,
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.titleLarge
                 )
-                Spacer(Modifier.weight(1f))
+
+                Spacer(modifier = Modifier.weight(1f))
+
                 Icon(
-                    imageVector = Icons.Default.Phone ,
-                    contentDescription = null,
+                    imageVector = Icons.Default.Phone,
+                    contentDescription = null
                 )
+
                 Text(
                     text = siswa.telpon,
                     style = MaterialTheme.typography.titleMedium
                 )
             }
+
             Text(
                 text = siswa.alamat,
                 style = MaterialTheme.typography.titleMedium
@@ -153,3 +190,7 @@ fun DataSiswa(
         }
     }
 }
+
+
+
+

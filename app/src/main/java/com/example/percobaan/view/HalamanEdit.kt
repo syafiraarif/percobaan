@@ -1,6 +1,8 @@
 package com.example.percobaan.view
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -21,6 +23,8 @@ fun EditSiswaScreen(
     modifier: Modifier = Modifier,
     viewModel: EditViewModel = viewModel(factory = PenyediaViewModel.Factory)
 ) {
+    val coroutineScope = rememberCoroutineScope()
+
     Scaffold(
         topBar = {
             SiswaTopAppBar(
@@ -31,7 +35,7 @@ fun EditSiswaScreen(
         },
         modifier = modifier
     ) { innerPadding ->
-        val coroutineScope = rememberCoroutineScope()
+
         EntrySiswaBody(
             uiStateSiswa = viewModel.uiStateSiswa,
             onSiswaValueChange = viewModel::updateUiState,
@@ -41,7 +45,9 @@ fun EditSiswaScreen(
                     navigateBack()
                 }
             },
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier
+                .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
         )
     }
 }

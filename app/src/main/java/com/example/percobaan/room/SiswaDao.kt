@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SiswaDao {
-    @Query("SELECT * from tblSiswa ORDER BY nama ASC")
-    fun getAllSiswa(): Flow<List<Siswa>>
+    @Query("SELECT * FROM tblSiswa WHERE nama LIKE :searchQuery or alamat LIKE :searchQuery ORDER BY nama ASC")
+    fun getAllSiswa(searchQuery: String): Flow<List<Siswa>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(siswa: Siswa)

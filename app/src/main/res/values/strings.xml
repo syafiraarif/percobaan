@@ -27,4 +27,8 @@
     <string name="btn_register">Register</string>
     <string name="btn_login">Login</string>
     <string name="error_syarat">Anda harus menyetujui syarat dan ketentuan.</string>
+    <string name="search_hint">Cari Siswa...</string>
+    <string name="tanggal_lahir">Tanggal Lahir :</string>
+    <string name="kelas">Kelas Siswa*</string>
+    <string name="peminatan">Peminatan*</string>
 </resources>

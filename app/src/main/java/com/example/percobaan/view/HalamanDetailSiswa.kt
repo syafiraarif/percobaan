@@ -145,38 +145,32 @@ fun DetailDataSiswa(
         ) {
             BarisDetailData(
                 labelResID = R.string.nama1,
-                itemDetail = siswa.nama,
-                modifier = Modifier.padding(
-                    horizontal = dimensionResource(
-                        id = R.dimen
-                            .padding_medium
-                    )
-                )
+                itemDetail = siswa.nama
             )
             BarisDetailData(
                 labelResID = R.string.alamat1,
-                itemDetail = siswa.alamat,
-                modifier = Modifier.padding(
-                    horizontal = dimensionResource(
-                        id = R.dimen
-                            .padding_medium
-                    )
-                )
+                itemDetail = siswa.alamat
             )
             BarisDetailData(
                 labelResID = R.string.telpon1,
-                itemDetail = siswa.telpon,
-                modifier = Modifier.padding(
-                    horizontal = dimensionResource(
-                        id = R.dimen
-                            .padding_medium
-                    )
-                )
+                itemDetail = siswa.telpon
+            )
+            BarisDetailData(
+                labelResID = R.string.kelas,  // Tambahkan string resource untuk "Kelas"
+                itemDetail = siswa.kelas
+            )
+            BarisDetailData(
+                labelResID = R.string.peminatan,  // Tambahkan string resource untuk "Peminatan"
+                itemDetail = siswa.peminatan
+            )
+            BarisDetailData(
+                labelResID = R.string.tanggal_lahir,  // Tambahkan string resource untuk "Tanggal Lahir"
+                itemDetail = siswa.tanggal_lahir
             )
         }
-
     }
 }
+
 
 @Composable
 private fun BarisDetailData(
@@ -210,3 +204,4 @@ private fun DeleteConfirmationDialog(
             }
         })
 }
+

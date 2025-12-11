@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.percobaan.R
 import com.example.percobaan.viewmodel.UserViewModel
+import com.example.percobaan.viewmodel.provider.PenyediaViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -18,7 +19,7 @@ import kotlinx.coroutines.launch
 fun HalamanLogin(
     navigateToRegister: () -> Unit,
     navigateToHome: () -> Unit,
-    viewModel: UserViewModel = viewModel()
+    viewModel: UserViewModel = viewModel(factory = PenyediaViewModel.Factory)
 ) {
     val uiState = viewModel.uiStateUser
     val snackbarHostState = remember { SnackbarHostState() }
