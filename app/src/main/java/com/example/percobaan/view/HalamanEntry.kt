@@ -25,7 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.percobaan.R
-import com.example.percobaan.room.MataKuliah // BARU
+import com.example.percobaan.room.MataKuliah
 import com.example.percobaan.view.route.DestinasiEntry
 import com.example.percobaan.viewmodel.DetailSiswa
 import com.example.percobaan.viewmodel.EntryViewModel
@@ -59,21 +59,29 @@ fun EntrySiswaScreen(
         }
     ) { innerPadding ->
 
-        EntrySiswaBody(
-            uiStateSiswa = viewModel.uiStateSiswa,
-            onSiswaValueChange = viewModel::updateUiState,
-            onSaveClick = {
-                coroutineScope.launch {
-                    viewModel.saveSiswa()
-                    navigateBack()
-                }
-            },
-            listMataKuliah = mataKuliahList, // TERUSKAN
+        // FIX SCROLLING: Terapkan innerPadding & verticalScroll ke body
+        Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
-                .fillMaxWidth()
-        )
+                .fillMaxSize()
+        ) {
+            EntrySiswaBody(
+                uiStateSiswa = viewModel.uiStateSiswa,
+                onSiswaValueChange = viewModel::updateUiState,
+                onSaveClick = {
+                    coroutineScope.launch {
+                        viewModel.saveSiswa()
+                        navigateBack()
+                    }
+                },
+                listMataKuliah = mataKuliahList,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    // Hapus padding vertikal di sini, hanya simpan padding horizontal
+                    .padding(horizontal = dimensionResource(id = R.dimen.padding_medium))
+            )
+        }
     }
 }
 
@@ -83,21 +91,20 @@ fun EntrySiswaBody(
     uiStateSiswa: UIStateSiswa,
     onSiswaValueChange: (DetailSiswa) -> Unit,
     onSaveClick: () -> Unit,
-    listMataKuliah: List<MataKuliah>, // BARU: Terima list Mata Kuliah
+    listMataKuliah: List<MataKuliah>,
     modifier: Modifier = Modifier
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(
             dimensionResource(id = R.dimen.padding_large)
         ),
-        modifier = modifier.padding(
-            dimensionResource(id = R.dimen.padding_medium)
-        )
+        // FIX SCROLLING: Modifier dari parent (sudah termasuk padding horizontal) digunakan di sini
+        modifier = modifier
     ) {
         FormInputSiswa(
             detailSiswa = uiStateSiswa.detailSiswa,
             onValueChange = onSiswaValueChange,
-            listMataKuliah = listMataKuliah, // TERUSKAN
+            listMataKuliah = listMataKuliah,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -105,7 +112,10 @@ fun EntrySiswaBody(
             onClick = onSaveClick,
             enabled = uiStateSiswa.isEntryValid,
             shape = MaterialTheme.shapes.small,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                // Tambahkan padding bawah agar tombol tidak mepet/terpotong
+                .padding(bottom = dimensionResource(id = R.dimen.padding_medium))
         ) {
             Text(stringResource(R.string.btn_submit))
         }
@@ -118,7 +128,7 @@ fun FormInputSiswa(
     modifier: Modifier = Modifier,
     onValueChange: (DetailSiswa) -> Unit = {},
     enabled: Boolean = true,
-    listMataKuliah: List<MataKuliah> = emptyList() // BARU
+    listMataKuliah: List<MataKuliah> = emptyList()
 ) {
     val context = LocalContext.current
     val calendar = java.util.Calendar.getInstance()
@@ -297,7 +307,7 @@ fun FormInputSiswa(
         }
 
         // Divider
-        HorizontalDivider( // UBAH: Mengganti Divider
+        HorizontalDivider(
             modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_medium)),
             thickness = dimensionResource(R.dimen.padding_small),
             color = Color.Blue

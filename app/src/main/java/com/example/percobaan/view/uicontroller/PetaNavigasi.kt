@@ -13,7 +13,7 @@ import com.example.percobaan.view.DetailSiswaScreen
 import com.example.percobaan.view.EditSiswaScreen
 import com.example.percobaan.view.EntrySiswaScreen
 import com.example.percobaan.view.HomeScreen
-import com.example.percobaan.view.HalamanListMataKuliah // BARU
+import com.example.percobaan.view.HalamanListMataKuliah
 import com.example.percobaan.view.route.DestinasiDetailSiswa
 import com.example.percobaan.view.route.DestinasiDetailSiswa.itemIdArg
 import com.example.percobaan.view.route.DestinasiEditSiswa
@@ -21,12 +21,12 @@ import com.example.percobaan.view.route.DestinasiEntry
 import com.example.percobaan.view.route.DestinasiHome
 import com.example.percobaan.view.route.DestinasiLogin
 import com.example.percobaan.view.route.DestinasiRegister
-import com.example.percobaan.view.route.DetailMataKuliah // BARU
-import com.example.percobaan.view.route.EntryMataKuliah // BARU
-import com.example.percobaan.view.route.ListMataKuliah // BARU
+import com.example.percobaan.view.route.DetailMataKuliah
+import com.example.percobaan.view.route.EntryMataKuliah
+import com.example.percobaan.view.route.ListMataKuliah
 import com.example.percobaan.view.HalamanLogin
 import com.example.percobaan.view.HalamanRegistrasi
-
+import com.example.percobaan.view.HalamanEntryMataKuliah // BARU
 
 @Composable
 fun SiswaApp(navController: NavHostController= rememberNavController(), modifier: Modifier){
@@ -145,7 +145,9 @@ fun HostNavigasi(
         }
 
         composable(EntryMataKuliah.route) {
-            // Tempat untuk HalamanEntryMataKuliah
+            HalamanEntryMataKuliah( // IMPLEMENTASI BARU
+                navigateBack = { navController.popBackStack() }
+            )
         }
 
         composable(
