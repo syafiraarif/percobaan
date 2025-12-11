@@ -1,3 +1,4 @@
+// app/src/main/java/com/example/percobaan/viewmodel/MataKuliahListViewModel.kt
 package com.example.percobaan.viewmodel
 
 import androidx.lifecycle.ViewModel
@@ -17,9 +18,10 @@ class MataKuliahListViewModel(
 
     // REMOVED: searchQuery state dan updateSearchQuery function
 
-    // UPDATED: uiState langsung stream semua data (menggunakan "%" sebagai wildcard search)
+    // UPDATED: uiState langsung stream semua data
     val uiState: StateFlow<MataKuliahListUiState> =
-        repo.getAllMataKuliahStream("%") // Mengambil SEMUA data
+        // [FIXED] Panggil tanpa parameter
+        repo.getAllMataKuliahStream()
             .map { MataKuliahListUiState(listMatkul = it) }
             .stateIn(
                 viewModelScope,

@@ -1,3 +1,4 @@
+// app/src/main/java/com/example/percobaan/repositori/RepositoriMataKuliah.kt
 package com.example.percobaan.repositori
 
 import com.example.percobaan.room.MataKuliah
@@ -6,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 // Interface repositori
 interface RepositoriMataKuliah {
+    // [FIXED] Hapus parameter searchQuery
     fun getAllMataKuliahStream(): Flow<List<MataKuliah>>
     fun getMataKuliah(id: Int): Flow<MataKuliah>
 
@@ -19,6 +21,7 @@ class OfflineRepositoriMataKuliah(
     private val mataKuliahDao: MataKuliahDao
 ) : RepositoriMataKuliah {
 
+    // [FIXED] Panggil DAO tanpa parameter
     override fun getAllMataKuliahStream(): Flow<List<MataKuliah>> =
         mataKuliahDao.getAllMatkul()
 

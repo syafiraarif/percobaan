@@ -1,3 +1,4 @@
+// app/src/main/java/com/example/percobaan/room/MataKuliahDao.kt
 package com.example.percobaan.room
 
 import androidx.room.Dao
@@ -11,6 +12,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface MataKuliahDao {
 
+    // [FIXED] Hapus klausa WHERE LIKE dan parameter searchQuery.
     @Query("SELECT * FROM tblMataKuliah ORDER BY nama_matkul ASC")
     fun getAllMatkul(): Flow<List<MataKuliah>>
 

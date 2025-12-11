@@ -1,3 +1,4 @@
+// app/src/main/java/com/example/percobaan/viewmodel/EditViewModel.kt
 package com.example.percobaan.viewmodel
 
 import androidx.compose.runtime.getValue
@@ -31,7 +32,8 @@ class EditViewModel(
 
     // Expose daftar Mata Kuliah
     val mataKuliahList: StateFlow<List<MataKuliah>> =
-        repositoriMataKuliah.getAllMataKuliahStream("%")
+        // [FIXED] Hapus parameter "%"
+        repositoriMataKuliah.getAllMataKuliahStream()
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),

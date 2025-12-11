@@ -1,3 +1,4 @@
+// app/src/main/java/com/example/percobaan/viewmodel/EntryViewModel.kt
 package com.example.percobaan.viewmodel
 
 import androidx.compose.runtime.getValue
@@ -24,7 +25,8 @@ class EntryViewModel(
 
     // BARU: Expose daftar Mata Kuliah
     val mataKuliahList: StateFlow<List<MataKuliah>> =
-        repositoriMataKuliah.getAllMataKuliahStream("%")
+        // [FIXED] Panggil tanpa parameter
+        repositoriMataKuliah.getAllMataKuliahStream()
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),

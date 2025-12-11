@@ -1,3 +1,4 @@
+// app/src/main/java/com/example/percobaan/view/HalamanListMataKuliah.kt
 package com.example.percobaan.view
 
 import androidx.compose.foundation.clickable
@@ -88,7 +89,7 @@ fun BodyListMatkul(
 ) {
     Column(modifier = modifier) {
 
-        // REMOVED: Search OutlinedTextField
+        // [FIXED] REMOVED: Search OutlinedTextField
 
         if (listMatkul.isEmpty()) {
             Text(
