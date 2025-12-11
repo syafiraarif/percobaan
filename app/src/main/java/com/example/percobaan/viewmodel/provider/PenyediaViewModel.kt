@@ -39,7 +39,8 @@ object PenyediaViewModel {
         initializer {
             EditViewModel(
                 this.createSavedStateHandle(),
-                aplikasiSiswa().container.repositoriSiswa
+                aplikasiSiswa().container.repositoriSiswa,
+                aplikasiSiswa().container.repositoriMataKuliah // BARU
             )
         }
         initializer {

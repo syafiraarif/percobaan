@@ -8,8 +8,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ExitToApp // BARU
-import androidx.compose.material.icons.filled.List // BARU
+import androidx.compose.material.icons.automirrored.filled.ExitToApp // BARU
+import androidx.compose.material.icons.automirrored.filled.List // BARU
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -55,7 +55,7 @@ fun HomeScreen(
                     // Tombol Mata Kuliah List
                     IconButton(onClick = navigateToMatkulList) {
                         Icon(
-                            imageVector = Icons.Default.List,
+                            imageVector = Icons.AutoMirrored.Filled.List, // UBAH IKON
                             contentDescription = stringResource(R.string.daftar_matakuliah)
                         )
                     }
@@ -63,7 +63,7 @@ fun HomeScreen(
                     // Tombol Logout
                     IconButton(onClick = navigateToLogin) {
                         Icon(
-                            imageVector = Icons.Default.ExitToApp,
+                            imageVector = Icons.AutoMirrored.Filled.ExitToApp, // UBAH IKON
                             contentDescription = stringResource(R.string.logout)
                         )
                     }

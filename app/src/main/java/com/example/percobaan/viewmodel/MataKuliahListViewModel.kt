@@ -8,9 +8,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.percobaan.repositori.RepositoriMataKuliah
 import com.example.percobaan.room.MataKuliah
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalCoroutinesApi::class) // BARU
 class MataKuliahListViewModel(
     private val repo: RepositoriMataKuliah
 ) : ViewModel() {

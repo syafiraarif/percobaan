@@ -27,7 +27,7 @@ abstract class DatabaseSiswa : RoomDatabase() {
                     DatabaseSiswa::class.java,
                     "siswa_database"
                 )
-                    .fallbackToDestructiveMigration() // ini aman buat reset db kalau schema berubah
+                    .fallbackToDestructiveMigration(true) // FIX: Perbaikan Deprecated warning
                     .build()
                     .also { Instance = it }
             }

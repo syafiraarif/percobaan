@@ -7,7 +7,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -25,7 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.percobaan.R
-import com.example.percobaan.room.MataKuliah
+import com.example.percobaan.room.MataKuliah // BARU
 import com.example.percobaan.view.route.DestinasiEntry
 import com.example.percobaan.viewmodel.DetailSiswa
 import com.example.percobaan.viewmodel.EntryViewModel
@@ -261,6 +261,7 @@ fun FormInputSiswa(
             }
         }
 
+
         // Tanggal Lahir pakai DatePickerDialog
         OutlinedTextField(
             value = detailSiswa.tanggal_lahir,
@@ -296,7 +297,7 @@ fun FormInputSiswa(
         }
 
         // Divider
-        Divider(
+        HorizontalDivider( // UBAH: Mengganti Divider
             modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_medium)),
             thickness = dimensionResource(R.dimen.padding_small),
             color = Color.Blue
