@@ -13,6 +13,7 @@ import com.example.percobaan.view.DetailSiswaScreen
 import com.example.percobaan.view.EditSiswaScreen
 import com.example.percobaan.view.EntrySiswaScreen
 import com.example.percobaan.view.HomeScreen
+import com.example.percobaan.view.HalamanListMataKuliah // BARU
 import com.example.percobaan.view.route.DestinasiDetailSiswa
 import com.example.percobaan.view.route.DestinasiDetailSiswa.itemIdArg
 import com.example.percobaan.view.route.DestinasiEditSiswa
@@ -20,6 +21,9 @@ import com.example.percobaan.view.route.DestinasiEntry
 import com.example.percobaan.view.route.DestinasiHome
 import com.example.percobaan.view.route.DestinasiLogin
 import com.example.percobaan.view.route.DestinasiRegister
+import com.example.percobaan.view.route.DetailMataKuliah // BARU
+import com.example.percobaan.view.route.EntryMataKuliah // BARU
+import com.example.percobaan.view.route.ListMataKuliah // BARU
 import com.example.percobaan.view.HalamanLogin
 import com.example.percobaan.view.HalamanRegistrasi
 
@@ -77,13 +81,23 @@ fun HostNavigasi(
         }
 
         // ----------------------
-        // 🏠 HOME (sudah ada)
+        // 🏠 HOME
         // ----------------------
         composable(DestinasiHome.route) {
             HomeScreen(
                 navigateToItemEntry = { navController.navigate(DestinasiEntry.route) },
                 navigateToItemUpdate = { navController.navigate("${DestinasiDetailSiswa.route}/${it}") },
-                navigateBack = { navController.popBackStack() }
+                navigateBack = { navController.popBackStack() },
+                // BARU: Aksi Logout
+                navigateToLogin = {
+                    navController.navigate(DestinasiLogin.route) {
+                        popUpTo(DestinasiHome.route) { inclusive = true }
+                    }
+                },
+                // BARU: Aksi ke List Mata Kuliah
+                navigateToMatkulList = {
+                    navController.navigate(ListMataKuliah.route)
+                }
             )
         }
 
@@ -118,11 +132,27 @@ fun HostNavigasi(
                 onNavigateUp = { navController.navigateUp() }
             )
         }
+
+        // ----------------------
+        // 📚 MATA KULIAH SCREENS (BARU)
+        // ----------------------
+        composable(ListMataKuliah.route) {
+            HalamanListMataKuliah(
+                navigateToEntry = { navController.navigate(EntryMataKuliah.route) },
+                navigateToUpdate = { navController.navigate("${DetailMataKuliah.route}/${it}") },
+                navigateBack = { navController.navigateUp() } // Kembali ke Home
+            )
+        }
+
+        composable(EntryMataKuliah.route) {
+            // Tempat untuk HalamanEntryMataKuliah
+        }
+
+        composable(
+            route = DetailMataKuliah.routeWithArgs,
+            arguments = listOf(navArgument(DetailMataKuliah.argId) { type = NavType.IntType })
+        ) {
+            // Tempat untuk HalamanDetailMataKuliah
+        }
     }
 }
-
-
-
-
-
-

@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 // Interface repositori
 interface RepositoriMataKuliah {
-    fun getAllMataKuliah(): Flow<List<MataKuliah>>
+    fun getAllMataKuliahStream(searchQuery: String): Flow<List<MataKuliah>>
     fun getMataKuliah(id: Int): Flow<MataKuliah>
 
     suspend fun insert(mataKuliah: MataKuliah)
@@ -19,8 +19,8 @@ class OfflineRepositoriMataKuliah(
     private val mataKuliahDao: MataKuliahDao
 ) : RepositoriMataKuliah {
 
-    override fun getAllMataKuliah(): Flow<List<MataKuliah>> =
-        mataKuliahDao.getAllMataKuliah()
+    override fun getAllMataKuliahStream(searchQuery: String): Flow<List<MataKuliah>> =
+        mataKuliahDao.getAllMataKuliah(searchQuery)
 
     override fun getMataKuliah(id: Int): Flow<MataKuliah> =
         mataKuliahDao.getMataKuliah(id)

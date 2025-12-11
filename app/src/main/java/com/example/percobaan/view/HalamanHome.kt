@@ -8,6 +8,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.ExitToApp // BARU
+import androidx.compose.material.icons.filled.List // BARU
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -34,6 +36,8 @@ fun HomeScreen(
     navigateToItemEntry: () -> Unit,
     navigateToItemUpdate: (Int) -> Unit,
     navigateBack: () -> Unit,
+    navigateToLogin: () -> Unit, // BARU
+    navigateToMatkulList: () -> Unit, // BARU
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel(factory = PenyediaViewModel.Factory)
 ) {
@@ -45,7 +49,25 @@ fun HomeScreen(
             SiswaTopAppBar(
                 title = stringResource(DestinasiHome.titleRes),
                 canNavigateBack = false,
-                scrollBehavior = scrollBehavior
+                scrollBehavior = scrollBehavior,
+                // BARU: Tombol Logout dan Mata Kuliah
+                actions = {
+                    // Tombol Mata Kuliah List
+                    IconButton(onClick = navigateToMatkulList) {
+                        Icon(
+                            imageVector = Icons.Default.List,
+                            contentDescription = stringResource(R.string.daftar_matakuliah)
+                        )
+                    }
+
+                    // Tombol Logout
+                    IconButton(onClick = navigateToLogin) {
+                        Icon(
+                            imageVector = Icons.Default.ExitToApp,
+                            contentDescription = stringResource(R.string.logout)
+                        )
+                    }
+                }
             )
         },
         floatingActionButton = {
@@ -190,7 +212,3 @@ fun DataSiswa(
         }
     }
 }
-
-
-
-

@@ -4,6 +4,8 @@ import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.percobaan.repositori.RepositoriMataKuliah
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class MataKuliahEditViewModel(
@@ -14,9 +16,12 @@ class MataKuliahEditViewModel(
         private set
 
     fun load(id: Int) = viewModelScope.launch {
-        repo.getMataKuliah(id).collect { mk ->
-            uiState = mk.toDetail()
-        }
+        repo.getMataKuliah(id)
+            .filterNotNull()
+            .first()
+            .let { mk ->
+                uiState = mk.toDetail()
+            }
     }
 
     fun update(onDone: () -> Unit = {}) = viewModelScope.launch {

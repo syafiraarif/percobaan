@@ -1,5 +1,9 @@
 package com.example.percobaan.viewmodel
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.percobaan.repositori.RepositoriMataKuliah
@@ -15,15 +19,31 @@ class MataKuliahListViewModel(
         private const val TIMEOUT = 5000L
     }
 
-    val uiState: StateFlow<List<MataKuliah>> =
-        repo.getAllMataKuliah()
+    var searchQuery by mutableStateOf("")
+        private set
+
+    fun updateSearchQuery(newQuery: String) {
+        searchQuery = newQuery
+    }
+
+    val uiState: StateFlow<MataKuliahListUiState> =
+        snapshotFlow { searchQuery }
+            .flatMapLatest { query ->
+                val filteredQuery = "%$query%"
+                repo.getAllMataKuliahStream(filteredQuery)
+                    .map { MataKuliahListUiState(listMatkul = it) }
+            }
             .stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(TIMEOUT),
-                emptyList()
+                MataKuliahListUiState()
             )
 
     fun delete(mk: MataKuliah) = viewModelScope.launch {
         repo.delete(mk)
     }
 }
+
+data class MataKuliahListUiState(
+    val listMatkul: List<MataKuliah> = emptyList()
+)

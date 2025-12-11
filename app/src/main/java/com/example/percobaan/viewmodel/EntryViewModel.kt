@@ -4,14 +4,32 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.percobaan.repositori.RepositoriMataKuliah
 import com.example.percobaan.repositori.RepositoriSiswa
+import com.example.percobaan.room.MataKuliah
 import com.example.percobaan.room.Siswa
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 
 
-class EntryViewModel(private val repositoriSiswa: RepositoriSiswa) : ViewModel() {
+class EntryViewModel(
+    private val repositoriSiswa: RepositoriSiswa,
+    private val repositoriMataKuliah: RepositoriMataKuliah
+) : ViewModel() {
 
     var uiStateSiswa by mutableStateOf(UIStateSiswa())
         private set
+
+    // BARU: Expose daftar Mata Kuliah
+    val mataKuliahList: StateFlow<List<MataKuliah>> =
+        repositoriMataKuliah.getAllMataKuliahStream("%")
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = emptyList()
+            )
 
     /** VALIDASI INPUT */
     private fun validasiInput(uiState: DetailSiswa = uiStateSiswa.detailSiswa): Boolean {
@@ -20,7 +38,8 @@ class EntryViewModel(private val repositoriSiswa: RepositoriSiswa) : ViewModel()
                     alamat.isNotBlank() &&
                     telpon.isNotBlank() &&
                     kelas.isNotBlank() &&
-                    tanggal_lahir.isNotBlank()
+                    tanggal_lahir.isNotBlank() &&
+                    id_matkul > 0 // BARU: Validasi id_matkul
         }
     }
 
@@ -100,4 +119,3 @@ fun Siswa.toUIStateSiswa(isEntryValid: Boolean = false): UIStateSiswa =
         detailSiswa = this.toDetailSiswa(),
         isEntryValid = isEntryValid
     )
-

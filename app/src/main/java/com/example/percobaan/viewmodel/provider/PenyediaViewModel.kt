@@ -23,7 +23,8 @@ object PenyediaViewModel {
 
         initializer {
             EntryViewModel(
-                aplikasiSiswa().container.repositoriSiswa
+                aplikasiSiswa().container.repositoriSiswa,
+                aplikasiSiswa().container.repositoriMataKuliah // Perubahan
             )
         }
 

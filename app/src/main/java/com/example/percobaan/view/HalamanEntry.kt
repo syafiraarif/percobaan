@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.percobaan.R
+import com.example.percobaan.room.MataKuliah
 import com.example.percobaan.view.route.DestinasiEntry
 import com.example.percobaan.viewmodel.DetailSiswa
 import com.example.percobaan.viewmodel.EntryViewModel
@@ -42,6 +44,9 @@ fun EntrySiswaScreen(
 
     val coroutineScope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    // BARU: Kumpulkan daftar Mata Kuliah
+    val mataKuliahList by viewModel.mataKuliahList.collectAsState()
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -63,6 +68,7 @@ fun EntrySiswaScreen(
                     navigateBack()
                 }
             },
+            listMataKuliah = mataKuliahList, // TERUSKAN
             modifier = Modifier
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
@@ -77,6 +83,7 @@ fun EntrySiswaBody(
     uiStateSiswa: UIStateSiswa,
     onSiswaValueChange: (DetailSiswa) -> Unit,
     onSaveClick: () -> Unit,
+    listMataKuliah: List<MataKuliah>, // BARU: Terima list Mata Kuliah
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -90,6 +97,7 @@ fun EntrySiswaBody(
         FormInputSiswa(
             detailSiswa = uiStateSiswa.detailSiswa,
             onValueChange = onSiswaValueChange,
+            listMataKuliah = listMataKuliah, // TERUSKAN
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -109,7 +117,8 @@ fun FormInputSiswa(
     detailSiswa: DetailSiswa,
     modifier: Modifier = Modifier,
     onValueChange: (DetailSiswa) -> Unit = {},
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    listMataKuliah: List<MataKuliah> = emptyList() // BARU
 ) {
     val context = LocalContext.current
     val calendar = java.util.Calendar.getInstance()
@@ -209,6 +218,49 @@ fun FormInputSiswa(
             }
         }
 
+        // BARU: Dropdown Mata Kuliah
+        var dropdownMatkulExpanded by remember { mutableStateOf(false) }
+        val selectedMatkul = listMataKuliah.find { it.id_matkul == detailSiswa.id_matkul }
+        var textMatkul by remember(selectedMatkul) {
+            mutableStateOf(selectedMatkul?.nama_matkul ?: "Pilih Mata Kuliah*")
+        }
+
+        ExposedDropdownMenuBox(
+            expanded = dropdownMatkulExpanded,
+            onExpandedChange = { dropdownMatkulExpanded = !dropdownMatkulExpanded },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            OutlinedTextField(
+                value = textMatkul,
+                onValueChange = {},
+                readOnly = true,
+                label = { Text(stringResource(R.string.nama_matkul).replace("*", "")) }, // Label nama matkul
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropdownMatkulExpanded)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor()
+            )
+
+            ExposedDropdownMenu(
+                expanded = dropdownMatkulExpanded,
+                onDismissRequest = { dropdownMatkulExpanded = false },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                listMataKuliah.forEach { mk ->
+                    DropdownMenuItem(
+                        text = { Text(mk.nama_matkul) },
+                        onClick = {
+                            textMatkul = mk.nama_matkul
+                            dropdownMatkulExpanded = false
+                            onValueChange(detailSiswa.copy(id_matkul = mk.id_matkul))
+                        }
+                    )
+                }
+            }
+        }
+
         // Tanggal Lahir pakai DatePickerDialog
         OutlinedTextField(
             value = detailSiswa.tanggal_lahir,
@@ -251,4 +303,3 @@ fun FormInputSiswa(
         )
     }
 }
-
