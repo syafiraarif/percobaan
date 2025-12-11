@@ -10,6 +10,9 @@ import com.example.percobaan.viewmodel.DetailViewModel
 import com.example.percobaan.viewmodel.EditViewModel
 import com.example.percobaan.viewmodel.EntryViewModel
 import com.example.percobaan.viewmodel.HomeViewModel
+import com.example.percobaan.viewmodel.MataKuliahEditViewModel
+import com.example.percobaan.viewmodel.MataKuliahEntryViewModel
+import com.example.percobaan.viewmodel.MataKuliahListViewModel
 import com.example.percobaan.viewmodel.UserViewModel
 
 object PenyediaViewModel {
@@ -19,8 +22,11 @@ object PenyediaViewModel {
         }
 
         initializer {
-            EntryViewModel(aplikasiSiswa().container.repositoriSiswa)
+            EntryViewModel(
+                aplikasiSiswa().container.repositoriSiswa
+            )
         }
+
 
         initializer {
             DetailViewModel(
@@ -38,6 +44,25 @@ object PenyediaViewModel {
         initializer {
             UserViewModel(aplikasiSiswa().container.repositoriUser)
         }
+
+        initializer {
+            MataKuliahListViewModel(
+                aplikasiSiswa().container.repositoriMataKuliah
+            )
+        }
+
+        initializer {
+            MataKuliahEntryViewModel(
+                aplikasiSiswa().container.repositoriMataKuliah
+            )
+        }
+
+        initializer {
+            MataKuliahEditViewModel(
+                aplikasiSiswa().container.repositoriMataKuliah
+            )
+        }
+
 
     }
 }

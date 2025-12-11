@@ -6,14 +6,15 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [Siswa::class, User::class],
-    version = 3,
+    entities = [Siswa::class, User::class, MataKuliah::class], // <---
+    version = 4,   // NAIKKAN VERSI (3 → 4)
     exportSchema = false
 )
 abstract class DatabaseSiswa : RoomDatabase() {
 
     abstract fun SiswaDao(): SiswaDao
     abstract fun UserDao(): UserDao
+    abstract fun MataKuliahDao(): MataKuliahDao  // <--- tambahkan ini
 
     companion object {
         @Volatile
@@ -26,7 +27,7 @@ abstract class DatabaseSiswa : RoomDatabase() {
                     DatabaseSiswa::class.java,
                     "siswa_database"
                 )
-                    .fallbackToDestructiveMigration()   // untuk upgrade versi
+                    .fallbackToDestructiveMigration() // ini aman buat reset db kalau schema berubah
                     .build()
                     .also { Instance = it }
             }

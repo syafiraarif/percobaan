@@ -57,7 +57,9 @@ data class DetailSiswa(
     val kelas: String = "",
     val peminatan: List<String> = emptyList(),  // <- List untuk UI Checkbox
     val tanggal_lahir: String = "",
-    val telpon: String = ""
+    val telpon: String = "",
+    val id_matkul: Int = 0      // ← TAMBAH INI
+
 )
 
 /* ================================
@@ -73,7 +75,8 @@ fun DetailSiswa.toSiswa(): Siswa =
         kelas = kelas.trim(),
         peminatan = peminatan.joinToString(","),  // Convert List → String CSV
         tanggal_lahir = tanggal_lahir.trim(),
-        telpon = telpon.trim()
+        telpon = telpon.trim(),
+        id_matkul = id_matkul       // ← ini yang benar
     )
 
 /** Entity → DetailSiswa */
@@ -86,7 +89,9 @@ fun Siswa.toDetailSiswa(): DetailSiswa =
         peminatan = if (peminatan.isBlank()) emptyList()
         else peminatan.split(",").map { it.trim() },
         tanggal_lahir = tanggal_lahir,
-        telpon = telpon
+        telpon = telpon,
+        id_matkul = id_matkul       // ← jangan lupa
+
     )
 
 /** Entity → UIState */

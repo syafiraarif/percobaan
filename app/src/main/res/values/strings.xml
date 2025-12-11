@@ -32,4 +32,22 @@
     <string name="kelas">Kelas Siswa*</string>
     <string name="peminatan">Peminatan*</string>
     <string name="logout">Logout</string>
+    <!-- Judul halaman -->
+    <string name="daftar_matakuliah">Daftar Mata Kuliah</string>
+
+    <!-- Tombol tambah -->
+    <string name="entry_matkul">Tambah Mata Kuliah</string>
+
+    <!-- Form label -->
+    <string name="nama_matkul">Nama Mata Kuliah*</string>
+
+    <!-- Detail screen -->
+    <string name="detail_matkul">Detail Mata Kuliah</string>
+    <string name="edit_matkul">Edit Mata Kuliah</string>
+
+    <!-- Search -->
+    <string name="search_matkul">Cari Mata Kuliah...</string>
+
+    <!-- Pesan jika kosong -->
+    <string name="no_matkul">Tidak ada mata kuliah ditemukan</string>
 </resources>

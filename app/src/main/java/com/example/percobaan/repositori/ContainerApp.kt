@@ -8,6 +8,9 @@ import com.example.percobaan.room.DatabaseSiswa
 interface ContainerApp {
     val repositoriSiswa: RepositoriSiswa
     val repositoriUser: RepositoriUser   // tambahan
+
+    val repositoriMataKuliah: RepositoriMataKuliah   // <-- tambahkan ini
+
 }
 
 // Implementasi container
@@ -24,7 +27,12 @@ class ContainerDataApp(private val context: Context) : ContainerApp {
     override val repositoriUser: RepositoriUser by lazy {
         OfflineRepositoriUser(database.UserDao())
     }
+
+    override val repositoriMataKuliah: RepositoriMataKuliah by lazy {
+        OfflineRepositoriMataKuliah(database.MataKuliahDao()) // <-- tambahkan ini
+    }
 }
+
 
 // Application class
 class AplikasiSiswa : Application() {
