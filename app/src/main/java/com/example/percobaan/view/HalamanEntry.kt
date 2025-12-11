@@ -32,7 +32,8 @@ import com.example.percobaan.viewmodel.EntryViewModel
 import com.example.percobaan.viewmodel.UIStateSiswa
 import com.example.percobaan.viewmodel.provider.PenyediaViewModel
 import kotlinx.coroutines.launch
-import java.util.Calendar // FIX: Pastikan ini diimpor
+import java.util.Calendar // Penting untuk DatePicker
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,7 +54,7 @@ fun EntrySiswaScreen(
             SiswaTopAppBar(
                 title = stringResource(DestinasiEntry.titleRes),
                 canNavigateBack = true,
-                navigateUp = navigateBack, // FIX: Tombol back berfungsi
+                navigateUp = navigateBack,
                 scrollBehavior = scrollBehavior
             )
         }
@@ -133,19 +134,18 @@ fun FormInputSiswa(
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
 
-    // State untuk Kelas Dropdown
+    // --- State Lokal untuk UI Dropdown ---
     var dropdownKelasExpanded by remember { mutableStateOf(false) }
-    val opsiKelas = listOf("A", "B", "C", "D", "E")
-    // FIX DROPDOWN: Ambil nilai dari detailSiswa.kelas untuk ditampilkan
-    var textKelas by remember(detailSiswa.kelas) { mutableStateOf(detailSiswa.kelas) }
-
-    // State untuk Mata Kuliah Dropdown
     var dropdownMatkulExpanded by remember { mutableStateOf(false) }
-    // FIX DROPDOWN MATA KULIAH: Sinkronisasi textMatkul dengan id_matkul di detailSiswa
+
+    // --- Data Dropdown ---
+    val opsiKelas = listOf("A", "B", "C", "D", "E")
+
     val selectedMatkul = listMataKuliah.find { it.id_matkul == detailSiswa.id_matkul }
-    var textMatkul by remember(selectedMatkul) {
-        mutableStateOf(selectedMatkul?.nama_matkul ?: "Pilih Mata Kuliah*")
-    }
+
+    // --- Teks yang Ditampilkan (Diambil langsung dari state ViewModel) ---
+    val textKelas = detailSiswa.kelas // FIX: Langsung ambil dari ViewModel state
+    val textMatkul = selectedMatkul?.nama_matkul ?: "Pilih Mata Kuliah*" // FIX: Langsung ambil dari ViewModel state
 
     Column(
         modifier = modifier,
@@ -153,7 +153,7 @@ fun FormInputSiswa(
             dimensionResource(id = R.dimen.padding_medium)
         )
     ) {
-        // Nama, Alamat, Telpon (kode tetap)
+        // Nama, Alamat, Telpon (tetap)
         OutlinedTextField(
             value = detailSiswa.nama,
             onValueChange = { onValueChange(detailSiswa.copy(nama = it)) },
@@ -189,7 +189,7 @@ fun FormInputSiswa(
             onExpandedChange = { dropdownKelasExpanded = !dropdownKelasExpanded }
         ) {
             OutlinedTextField(
-                value = textKelas,
+                value = textKelas, // Menggunakan textKelas yang diderivasi dari state
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("Kelas") },
@@ -210,8 +210,8 @@ fun FormInputSiswa(
                     DropdownMenuItem(
                         text = { Text(opsi) },
                         onClick = {
-                            textKelas = opsi
                             dropdownKelasExpanded = false
+                            // Mengirim perubahan langsung ke ViewModel
                             onValueChange(detailSiswa.copy(kelas = opsi))
                         }
                     )
@@ -220,7 +220,7 @@ fun FormInputSiswa(
         }
 
 
-        // Checkbox Peminatan (kode tetap)
+        // Checkbox Peminatan (tetap)
         val opsiPeminatan = listOf("RPL", "DKV", "TJKT")
         Text("Peminatan:")
         opsiPeminatan.forEach { item ->
@@ -244,7 +244,7 @@ fun FormInputSiswa(
             modifier = Modifier.fillMaxWidth()
         ) {
             OutlinedTextField(
-                value = textMatkul,
+                value = textMatkul, // Menggunakan textMatkul yang diderivasi dari state
                 onValueChange = {},
                 readOnly = true,
                 label = { Text(stringResource(R.string.nama_matkul).replace("*", "")) },
@@ -261,13 +261,12 @@ fun FormInputSiswa(
                 onDismissRequest = { dropdownMatkulExpanded = false },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                // FIX: Menampilkan daftar Mata Kuliah
                 listMataKuliah.forEach { mk ->
                     DropdownMenuItem(
                         text = { Text(mk.nama_matkul) },
                         onClick = {
-                            textMatkul = mk.nama_matkul
                             dropdownMatkulExpanded = false
+                            // Mengirim perubahan langsung ke ViewModel
                             onValueChange(detailSiswa.copy(id_matkul = mk.id_matkul))
                         }
                     )
@@ -280,31 +279,36 @@ fun FormInputSiswa(
         OutlinedTextField(
             value = detailSiswa.tanggal_lahir,
             onValueChange = {},
-            readOnly = true, // Penting agar DatePicker yang muncul, bukan keyboard
+            readOnly = true,
             label = { Text("Tanggal Lahir*") },
             modifier = Modifier.fillMaxWidth(),
             trailingIcon = {
                 IconButton(onClick = {
-                    // FIX: Re-implementasi DatePickerDialog yang berfungsi
+                    // FIX: Logika DatePicker
+                    val year = calendar.get(Calendar.YEAR)
+                    val month = calendar.get(Calendar.MONTH)
+                    val day = calendar.get(Calendar.DAY_OF_MONTH)
+
                     val dpd = android.app.DatePickerDialog(
                         context,
-                        { _, year, month, dayOfMonth ->
+                        // Listener saat tanggal dipilih
+                        { _, selectedYear, selectedMonth, selectedDayOfMonth ->
                             // Format tanggal: DD/MM/YYYY
-                            val tgl = String.format("%02d/%02d/%04d", dayOfMonth, month + 1, year)
+                            val tgl = String.format("%02d/%02d/%04d", selectedDayOfMonth, selectedMonth + 1, selectedYear)
                             onValueChange(detailSiswa.copy(tanggal_lahir = tgl))
                         },
-                        calendar.get(Calendar.YEAR),
-                        calendar.get(Calendar.MONTH),
-                        calendar.get(Calendar.DAY_OF_MONTH)
+                        year,
+                        month,
+                        day
                     )
-                    dpd.show()
+                    dpd.show() // Menampilkan dialog
                 }) {
                     Icon(Icons.Default.DateRange, contentDescription = "Pilih Tanggal")
                 }
             }
         )
 
-        // Required field (kode tetap)
+        // Required field (tetap)
         if (enabled) {
             Text(
                 text = stringResource(R.string.required_field),
@@ -312,7 +316,7 @@ fun FormInputSiswa(
             )
         }
 
-        // Divider (kode tetap)
+        // Divider (tetap)
         HorizontalDivider(
             modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_medium)),
             thickness = dimensionResource(R.dimen.padding_small),

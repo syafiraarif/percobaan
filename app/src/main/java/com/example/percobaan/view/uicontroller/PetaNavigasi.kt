@@ -12,9 +12,12 @@ import androidx.navigation.navArgument
 import com.example.percobaan.view.DetailSiswaScreen
 import com.example.percobaan.view.EditSiswaScreen
 import com.example.percobaan.view.EntrySiswaScreen
-import com.example.percobaan.view.HalamanDetailMataKuliah // BARU
+import com.example.percobaan.view.HalamanDetailMataKuliah
 import com.example.percobaan.view.HomeScreen
 import com.example.percobaan.view.HalamanListMataKuliah
+import com.example.percobaan.view.HalamanEntryMataKuliah
+import com.example.percobaan.view.HalamanLogin
+import com.example.percobaan.view.HalamanRegistrasi
 import com.example.percobaan.view.route.DestinasiDetailSiswa
 import com.example.percobaan.view.route.DestinasiDetailSiswa.itemIdArg
 import com.example.percobaan.view.route.DestinasiEditSiswa
@@ -22,18 +25,15 @@ import com.example.percobaan.view.route.DestinasiEntry
 import com.example.percobaan.view.route.DestinasiHome
 import com.example.percobaan.view.route.DestinasiLogin
 import com.example.percobaan.view.route.DestinasiRegister
-import com.example.percobaan.view.route.DetailMataKuliah // BARU
-import com.example.percobaan.view.route.EntryMataKuliah // BARU
-import com.example.percobaan.view.route.ListMataKuliah // BARU
-import com.example.percobaan.view.HalamanLogin
-import com.example.percobaan.view.HalamanRegistrasi
-import com.example.percobaan.view.HalamanEntryMataKuliah // BARU
+import com.example.percobaan.view.route.DetailMataKuliah
+import com.example.percobaan.view.route.EntryMataKuliah
+import com.example.percobaan.view.route.ListMataKuliah
+
 
 @Composable
 fun SiswaApp(navController: NavHostController= rememberNavController(), modifier: Modifier){
     com.example.percobaan.view.uicontroller.HostNavigasi(navController = navController)
 }
-// ... (imports)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,11 +43,41 @@ fun HostNavigasi(
 ){
     NavHost(
         navController = navController,
-        startDestination = DestinasiLogin.route, // Login jadi halaman awal
+        startDestination = DestinasiLogin.route,
         modifier = Modifier
     ) {
 
-        // ... (Rute Login dan Register tetap sama)
+        // ----------------------
+        // 🔐 LOGIN SCREEN
+        // ----------------------
+        composable(DestinasiLogin.route) {
+            HalamanLogin(
+                navigateToRegister = {
+                    navController.navigate(DestinasiRegister.route)
+                },
+                navigateToHome = {
+                    // Pindah ke Home dan hapus layar Login dari back stack
+                    navController.navigate(DestinasiHome.route) {
+                        popUpTo(DestinasiLogin.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        // ----------------------
+        // 📝 REGISTER SCREEN
+        // ----------------------
+        composable(DestinasiRegister.route) {
+            HalamanRegistrasi(
+                navigateBack = { navController.popBackStack() },
+                navigateToLogin = {
+                    // Pindah ke Login dan hapus layar Register dari back stack
+                    navController.navigate(DestinasiLogin.route) {
+                        popUpTo(DestinasiRegister.route) { inclusive = true }
+                    }
+                }
+            )
+        }
 
         // ----------------------
         // 🏠 HOME
@@ -59,6 +89,7 @@ fun HostNavigasi(
                 navigateBack = { navController.popBackStack() },
                 // Aksi Logout
                 navigateToLogin = {
+                    // Navigasi ke Login dan hapus semua history Home
                     navController.navigate(DestinasiLogin.route) {
                         popUpTo(DestinasiHome.route) { inclusive = true }
                     }
@@ -70,7 +101,9 @@ fun HostNavigasi(
             )
         }
 
-        // ... (Destinasi Entry, Detail, dan Edit Siswa tetap sama)
+        // ----------------------
+        // SISWA SCREENS
+        // ----------------------
         composable(DestinasiEntry.route) {
             EntrySiswaScreen(navigateBack = { navController.popBackStack() })
         }
@@ -108,7 +141,7 @@ fun HostNavigasi(
         composable(ListMataKuliah.route) {
             HalamanListMataKuliah(
                 navigateToEntry = { navController.navigate(EntryMataKuliah.route) },
-                navigateToUpdate = { navController.navigate("${DetailMataKuliah.route}/${it}") }, // UBAH: Navigasi ke Detail Mata Kuliah
+                navigateToUpdate = { navController.navigate("${DetailMataKuliah.route}/${it}") },
                 navigateBack = { navController.navigateUp() } // Kembali ke Home
             )
         }
@@ -123,8 +156,9 @@ fun HostNavigasi(
             route = DetailMataKuliah.routeWithArgs,
             arguments = listOf(navArgument(DetailMataKuliah.argId) { type = NavType.IntType })
         ) {
-            HalamanDetailMataKuliah( // BARU: Menambahkan Detail Mata Kuliah
-                navigateToEdit = { navController.navigate("${DestinasiEditSiswa.route}/${it}") }, // Ganti dengan rute edit Mata Kuliah jika sudah dibuat
+            HalamanDetailMataKuliah(
+                // Ganti dengan rute edit Mata Kuliah jika sudah dibuat
+                navigateToEdit = { /* TODO: Navigasi ke Edit Mata Kuliah */ },
                 navigateBack = { navController.navigateUp() }
             )
         }

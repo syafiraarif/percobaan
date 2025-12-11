@@ -11,8 +11,9 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface MataKuliahDao {
 
-    @Query("SELECT * FROM tblMataKuliah WHERE nama_matkul LIKE :searchQuery ORDER BY nama_matkul ASC")
-    fun getAllMataKuliah(searchQuery: String): Flow<List<MataKuliah>>
+    @Query("SELECT * FROM tblMataKuliah ORDER BY nama_matkul ASC")
+    fun getAllMatkul(): Flow<List<MataKuliah>>
+
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(mataKuliah: MataKuliah)
