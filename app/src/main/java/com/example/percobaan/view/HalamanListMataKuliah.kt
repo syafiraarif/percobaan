@@ -6,7 +6,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -22,7 +21,7 @@ import com.example.percobaan.room.MataKuliah
 import com.example.percobaan.viewmodel.provider.PenyediaViewModel
 import com.example.percobaan.view.route.DestinasiNavigasi
 import com.example.percobaan.viewmodel.MataKuliahListViewModel
-import com.example.percobaan.viewmodel.MataKuliahListUiState // BARU
+import com.example.percobaan.viewmodel.MataKuliahListUiState
 
 /* ROUTE */
 object DestinasiListMataKuliah : DestinasiNavigasi {
@@ -36,7 +35,7 @@ object DestinasiListMataKuliah : DestinasiNavigasi {
 fun HalamanListMataKuliah(
     navigateToEntry: () -> Unit,
     navigateToUpdate: (Int) -> Unit,
-    navigateBack: () -> Unit, // BARU
+    navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MataKuliahListViewModel = viewModel(factory = PenyediaViewModel.Factory)
 ) {
@@ -48,7 +47,7 @@ fun HalamanListMataKuliah(
             SiswaTopAppBar(
                 title = stringResource(DestinasiListMataKuliah.titleRes),
                 canNavigateBack = true,
-                navigateUp = navigateBack, // FIX: Tombol back berfungsi
+                navigateUp = navigateBack,
                 scrollBehavior = scrollBehavior
             )
         },
@@ -60,7 +59,7 @@ fun HalamanListMataKuliah(
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(R.string.entry_matkul) // UBAH
+                    contentDescription = stringResource(R.string.entry_matkul)
                 )
             }
         }
@@ -71,8 +70,7 @@ fun HalamanListMataKuliah(
         BodyListMatkul(
             listMatkul = uiState.listMatkul,
             onClickMatkul = { navigateToUpdate(it.id_matkul) },
-            searchQuery = viewModel.searchQuery, // BARU
-            onSearchQueryChange = viewModel::updateSearchQuery, // BARU
+            // REMOVED: searchQuery parameters
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
@@ -85,26 +83,16 @@ fun HalamanListMataKuliah(
 fun BodyListMatkul(
     listMatkul: List<MataKuliah>,
     onClickMatkul: (MataKuliah) -> Unit,
-    searchQuery: String, // BARU
-    onSearchQueryChange: (String) -> Unit, // BARU
+    // REMOVED: searchQuery parameters
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
 
-        OutlinedTextField(
-            value = searchQuery,
-            onValueChange = onSearchQueryChange,
-            label = { Text(stringResource(R.string.search_matkul)) }, // UBAH
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            singleLine = true
-        )
+        // REMOVED: Search OutlinedTextField
 
         if (listMatkul.isEmpty()) {
             Text(
-                text = stringResource(R.string.no_matkul), // UBAH
+                text = stringResource(R.string.no_matkul),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.fillMaxWidth()

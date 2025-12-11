@@ -32,7 +32,7 @@ import com.example.percobaan.viewmodel.EntryViewModel
 import com.example.percobaan.viewmodel.UIStateSiswa
 import com.example.percobaan.viewmodel.provider.PenyediaViewModel
 import kotlinx.coroutines.launch
-import java.util.Calendar // Penting untuk DatePicker
+import java.util.Calendar
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,7 +60,6 @@ fun EntrySiswaScreen(
         }
     ) { innerPadding ->
 
-        // FIX SCROLLING: Terapkan innerPadding & verticalScroll ke Column
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -79,7 +78,6 @@ fun EntrySiswaScreen(
                 listMataKuliah = mataKuliahList,
                 modifier = Modifier
                     .fillMaxWidth()
-                    // FIX SCROLLING: Hanya padding horizontal agar verticalScroll bekerja sempurna
                     .padding(horizontal = dimensionResource(id = R.dimen.padding_medium))
             )
         }
@@ -99,7 +97,6 @@ fun EntrySiswaBody(
         verticalArrangement = Arrangement.spacedBy(
             dimensionResource(id = R.dimen.padding_large)
         ),
-        // FIX SCROLLING: Tambahkan padding vertikal di sini
         modifier = modifier.padding(vertical = dimensionResource(id = R.dimen.padding_medium))
     ) {
         FormInputSiswa(
@@ -115,7 +112,6 @@ fun EntrySiswaBody(
             shape = MaterialTheme.shapes.small,
             modifier = Modifier
                 .fillMaxWidth()
-                // FIX SCROLLING: Padding bawah ekstra untuk tombol submit
                 .padding(bottom = dimensionResource(id = R.dimen.padding_large))
         ) {
             Text(stringResource(R.string.btn_submit))
@@ -141,11 +137,11 @@ fun FormInputSiswa(
     // --- Data Dropdown ---
     val opsiKelas = listOf("A", "B", "C", "D", "E")
 
+    // FIX: Drived State untuk Mata Kuliah dan Kelas (Menggunakan nilai dari state ViewModel)
+    // textKelas dan textMatkul akan otomatis update saat detailSiswa/listMataKuliah berubah.
     val selectedMatkul = listMataKuliah.find { it.id_matkul == detailSiswa.id_matkul }
-
-    // --- Teks yang Ditampilkan (Diambil langsung dari state ViewModel) ---
-    val textKelas = detailSiswa.kelas // FIX: Langsung ambil dari ViewModel state
-    val textMatkul = selectedMatkul?.nama_matkul ?: "Pilih Mata Kuliah*" // FIX: Langsung ambil dari ViewModel state
+    val textKelas = detailSiswa.kelas
+    val textMatkul = selectedMatkul?.nama_matkul ?: "Pilih Mata Kuliah*"
 
     Column(
         modifier = modifier,
@@ -153,7 +149,7 @@ fun FormInputSiswa(
             dimensionResource(id = R.dimen.padding_medium)
         )
     ) {
-        // Nama, Alamat, Telpon (tetap)
+        // Nama, Alamat, Telpon (kode tetap)
         OutlinedTextField(
             value = detailSiswa.nama,
             onValueChange = { onValueChange(detailSiswa.copy(nama = it)) },
@@ -189,7 +185,7 @@ fun FormInputSiswa(
             onExpandedChange = { dropdownKelasExpanded = !dropdownKelasExpanded }
         ) {
             OutlinedTextField(
-                value = textKelas, // Menggunakan textKelas yang diderivasi dari state
+                value = textKelas,
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("Kelas") },
@@ -206,12 +202,12 @@ fun FormInputSiswa(
                 onDismissRequest = { dropdownKelasExpanded = false },
                 modifier = Modifier.fillMaxWidth()
             ) {
+                // FIX: Menampilkan opsi kelas
                 opsiKelas.forEach { opsi ->
                     DropdownMenuItem(
                         text = { Text(opsi) },
                         onClick = {
                             dropdownKelasExpanded = false
-                            // Mengirim perubahan langsung ke ViewModel
                             onValueChange(detailSiswa.copy(kelas = opsi))
                         }
                     )
@@ -220,7 +216,7 @@ fun FormInputSiswa(
         }
 
 
-        // Checkbox Peminatan (tetap)
+        // Checkbox Peminatan (kode tetap)
         val opsiPeminatan = listOf("RPL", "DKV", "TJKT")
         Text("Peminatan:")
         opsiPeminatan.forEach { item ->
@@ -261,12 +257,12 @@ fun FormInputSiswa(
                 onDismissRequest = { dropdownMatkulExpanded = false },
                 modifier = Modifier.fillMaxWidth()
             ) {
+                // FIX: Memastikan list Mata Kuliah ditampilkan
                 listMataKuliah.forEach { mk ->
                     DropdownMenuItem(
                         text = { Text(mk.nama_matkul) },
                         onClick = {
                             dropdownMatkulExpanded = false
-                            // Mengirim perubahan langsung ke ViewModel
                             onValueChange(detailSiswa.copy(id_matkul = mk.id_matkul))
                         }
                     )
@@ -284,16 +280,14 @@ fun FormInputSiswa(
             modifier = Modifier.fillMaxWidth(),
             trailingIcon = {
                 IconButton(onClick = {
-                    // FIX: Logika DatePicker
+                    // FIX: Logika DatePicker yang benar
                     val year = calendar.get(Calendar.YEAR)
                     val month = calendar.get(Calendar.MONTH)
                     val day = calendar.get(Calendar.DAY_OF_MONTH)
 
                     val dpd = android.app.DatePickerDialog(
                         context,
-                        // Listener saat tanggal dipilih
                         { _, selectedYear, selectedMonth, selectedDayOfMonth ->
-                            // Format tanggal: DD/MM/YYYY
                             val tgl = String.format("%02d/%02d/%04d", selectedDayOfMonth, selectedMonth + 1, selectedYear)
                             onValueChange(detailSiswa.copy(tanggal_lahir = tgl))
                         },
@@ -318,8 +312,8 @@ fun FormInputSiswa(
 
         // Divider (tetap)
         HorizontalDivider(
-            modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_medium)),
-            thickness = dimensionResource(R.dimen.padding_small),
+            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_medium)),
+            thickness = dimensionResource(id = R.dimen.padding_small),
             color = Color.Blue
         )
     }

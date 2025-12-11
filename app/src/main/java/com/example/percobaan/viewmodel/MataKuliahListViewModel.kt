@@ -1,18 +1,12 @@
 package com.example.percobaan.viewmodel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.percobaan.repositori.RepositoriMataKuliah
 import com.example.percobaan.room.MataKuliah
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalCoroutinesApi::class) // BARU
 class MataKuliahListViewModel(
     private val repo: RepositoriMataKuliah
 ) : ViewModel() {
@@ -21,20 +15,12 @@ class MataKuliahListViewModel(
         private const val TIMEOUT = 5000L
     }
 
-    var searchQuery by mutableStateOf("")
-        private set
+    // REMOVED: searchQuery state dan updateSearchQuery function
 
-    fun updateSearchQuery(newQuery: String) {
-        searchQuery = newQuery
-    }
-
+    // UPDATED: uiState langsung stream semua data (menggunakan "%" sebagai wildcard search)
     val uiState: StateFlow<MataKuliahListUiState> =
-        snapshotFlow { searchQuery }
-            .flatMapLatest { query ->
-                val filteredQuery = "%$query%"
-                repo.getAllMataKuliahStream(filteredQuery)
-                    .map { MataKuliahListUiState(listMatkul = it) }
-            }
+        repo.getAllMataKuliahStream("%") // Mengambil SEMUA data
+            .map { MataKuliahListUiState(listMatkul = it) }
             .stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(TIMEOUT),
